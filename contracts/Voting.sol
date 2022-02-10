@@ -2,11 +2,12 @@
 pragma solidity >=0.4.22 <0.9.0;
 
 contract Voting {
-    address owner;
+    address public owner;
     struct voter {
         string name;
         uint256 id;
         bool status;
+        bool votted;
     }
     mapping(address => voter) public voters;
     struct candidate {
@@ -22,17 +23,18 @@ contract Voting {
     }
 
     modifier ownerOnly() {
-        require(msg.sender == owner);
+        require(msg.sender == owner, "Must be Admin");
         _;
     }
 
     modifier check_voter() {
-        require(!voters[msg.sender].status);
+        require(voters[msg.sender].status, "You are not Voter");
         _;
     }
 
-    function addVoters(string memory _name, uint256 _id) public check_voter {
-        voters[msg.sender] = voter(_name, _id, true);
+    function addVoters(string memory _name, uint256 _id) public {
+        require(!voters[msg.sender].status, "You are already Added");
+        voters[msg.sender] = voter(_name, _id, true, false);
     }
 
     function addCandidate(
@@ -50,6 +52,8 @@ contract Voting {
     }
 
     function vote(uint256 index) public check_voter {
+        require(!voters[msg.sender].votted, "You Already Votted");
         newCandidates[index].votes += 1;
+        voters[msg.sender].votted = true;
     }
 }
