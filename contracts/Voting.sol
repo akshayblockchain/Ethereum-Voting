@@ -3,6 +3,8 @@ pragma solidity >=0.4.22 <0.9.0;
 
 contract Voting {
     address public owner;
+    bool public flag = false;
+    uint256 public resultFlag = 0;
     struct voter {
         string name;
         uint256 id;
@@ -55,5 +57,22 @@ contract Voting {
         require(!voters[msg.sender].votted, "You Already Votted");
         newCandidates[index].votes += 1;
         voters[msg.sender].votted = true;
+    }
+
+    function set_flag() public {
+        flag = !flag;
+        resultFlag += 1;
+    }
+
+    function get_length() public view returns (uint256) {
+        return newCandidates.length;
+    }
+
+    function get_candidateList() public view returns (candidate[] memory) {
+        return newCandidates;
+    }
+
+    function get_vottedDetails() public view returns (bool) {
+        return (voters[msg.sender].votted);
     }
 }
